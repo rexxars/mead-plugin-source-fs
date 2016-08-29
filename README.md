@@ -1,5 +1,7 @@
 # mead-plugin-source-fs
 
+[![npm version](http://img.shields.io/npm/v/mead-plugin-source-fs.svg?style=flat-square)](http://browsenpm.org/package/mead-plugin-source-fs)[![Build Status](http://img.shields.io/travis/rexxars/mead-plugin-source-fs/master.svg?style=flat-square)](https://travis-ci.org/rexxars/mead-plugin-source-fs)[![Coverage Status](https://img.shields.io/coveralls/rexxars/mead-plugin-source-fs/master.svg?style=flat-square)](https://coveralls.io/github/rexxars/mead-plugin-source-fs)[![Dependency status](https://img.shields.io/david/rexxars/mead-plugin-source-fs.svg?style=flat-square)](https://david-dm.org/rexxars/mead-plugin-source-fs)
+
 Filesystem source for the Mead image transformer service.  
 Loads images from the filesystem, plain and simple!
 

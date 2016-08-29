@@ -47,9 +47,9 @@ test('throws if trying to access path outside basePath', t => {
 
 test('returns stream on valid path', t => {
   fsSource({basePath: path.resolve(__dirname, '..')}).getImageStream('LICENSE', (err, stream) => {
-    t.ifError(err)
+    t.ifError(err, 'should not error on stream init')
     readStream(stream, (readErr, result) => {
-      t.ifError(readErr)
+      t.ifError(readErr, 'should not error on stream read')
       t.ok(result.includes('MIT License'), 'should contain expected data')
       t.end()
     })
