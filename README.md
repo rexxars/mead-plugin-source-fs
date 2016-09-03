@@ -25,15 +25,15 @@ module.exports = {
     require('mead-plugin-source-fs')
   ],
 
-  sources: [
-    {
-      name: 'mylocalsource',
-      adapter: 'fs',
+  sources: [{
+    name: 'mylocalsource',
+    adapter: {
+      type: 'fs',
       config: {
         basePath: '/home/rexxars/Dropbox/Photos'
       }
     }
-  ]
+  }]
 }
 ```
 
