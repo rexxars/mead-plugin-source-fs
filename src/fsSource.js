@@ -21,12 +21,16 @@ function fsSource(config) {
     const stream = fs.createReadStream(imgPath)
       .once('readable', () => callback(null, stream))
       .on('error', err => {
-        if (err.code === 'ENOENT') {
+        if (err.code === 'ENOENT' || err.code === 'EISDIR') {
           return callback(Boom.notFound('Image not found'))
         }
 
         if (err.code === 'EACCES') {
           return callback(Boom.forbidden('Permission denied'))
+        }
+
+        if (err.code === 'EMFILE') {
+          return callback(Boom.serverUnavailable('Too many open files (EMFILE)'))
         }
 
         return callback(Boom.badImplementation(err))

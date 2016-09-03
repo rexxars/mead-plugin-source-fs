@@ -37,10 +37,27 @@ test('throws on missing `basePath`', t => {
   t.end()
 })
 
-test('throws if trying to access path outside basePath', t => {
+test('throws 400 if trying to access path outside basePath', t => {
   fsSource({basePath: '/foo/bar/baz'}).getImageStream('blah/../../foo.jpg', err => {
     t.ok(err instanceof Error, 'should be error')
     t.ok(/base path/.test(err.message), 'should give meaningful error')
+    t.end()
+  })
+})
+
+
+test('throws 404 if file does not exist', t => {
+  fsSource({basePath: __dirname}).getImageStream('foo.jpg', (err, stream) => {
+    t.ok(err instanceof Error, 'should error')
+    t.ok(/not found/i.test(err.message), 'should give meaningful error')
+    t.end()
+  })
+})
+
+test('throws 404 if path is a directory', t => {
+  fsSource({basePath: path.join(__dirname, '..')}).getImageStream('test', (err, stream) => {
+    t.ok(err instanceof Error, 'should error')
+    t.ok(/not found/i.test(err.message), 'should give meaningful error')
     t.end()
   })
 })
