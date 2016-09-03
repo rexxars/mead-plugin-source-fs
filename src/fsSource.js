@@ -1,11 +1,12 @@
 const path = require('path')
-const fs = require('fs')
 const Boom = require('boom')
 
 function fsSource(config) {
   if (!config.basePath) {
     throw new Error('`basePath` is required for `fs`-source to work')
   }
+
+  const fs = config.fs || require('fs')
 
   return {getImageStream, requiresSignedUrls: false}
 
@@ -20,24 +21,26 @@ function fsSource(config) {
 
     const stream = fs.createReadStream(imgPath)
       .once('readable', () => callback(null, stream))
-      .on('error', err => {
-        if (err.code === 'ENOENT' || err.code === 'EISDIR') {
-          return callback(Boom.notFound('Image not found'))
-        }
-
-        if (err.code === 'EACCES') {
-          return callback(Boom.forbidden('Permission denied'))
-        }
-
-        if (err.code === 'EMFILE') {
-          return callback(Boom.serverUnavailable('Too many open files (EMFILE)'))
-        }
-
-        return callback(Boom.badImplementation(err))
-      })
+      .on('error', err => callback(wrapError(err)))
   }
 }
 
+function wrapError(err) {
+  switch (err.code) {
+    case 'ENOENT':
+    case 'EISDIR':
+      return Boom.notFound('Image not found')
+    case 'EACCES':
+      return Boom.forbidden('Permission denied')
+    case 'EMFILE':
+      return Boom.serverUnavailable('Temporarily unavailable', {
+        code: err.code,
+        message: 'Too many open files (EMFILE)'
+      })
+    default:
+      return Boom.badImplementation(err)
+  }
+}
 
 module.exports = {
   name: 'fs',
