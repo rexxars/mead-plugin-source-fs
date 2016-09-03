@@ -18,7 +18,19 @@ function fsSource(config) {
       return
     }
 
-    setImmediate(callback, null, fs.createReadStream(imgPath))
+    const stream = fs.createReadStream(imgPath)
+      .once('readable', () => callback(null, stream))
+      .on('error', err => {
+        if (err.code === 'ENOENT') {
+          return callback(Boom.notFound('Image not found'))
+        }
+
+        if (err.code === 'EACCES') {
+          return callback(Boom.forbidden('Permission denied'))
+        }
+
+        return callback(Boom.badImplementation(err))
+      })
   }
 }
 
