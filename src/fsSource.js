@@ -10,7 +10,8 @@ function fsSource(config) {
 
   return {getImageStream, requiresSignedUrls: false}
 
-  function getImageStream(urlPath, callback) {
+  function getImageStream(context, callback) {
+    const urlPath = context.urlPath
     const fsPath = path.sep === '/' ? urlPath : urlPath.replace(/\//g, path.sep)
     const imgPath = path.normalize(path.join(config.basePath, fsPath))
 

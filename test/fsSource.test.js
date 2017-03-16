@@ -47,7 +47,7 @@ test('throws on missing `basePath`', t => {
 })
 
 test('throws 400 if trying to access path outside basePath', t => {
-  fsSource({basePath: '/foo/bar/baz'}).getImageStream('blah/../../foo.jpg', err => {
+  fsSource({basePath: '/foo/bar/baz'}).getImageStream({urlPath: 'blah/../../foo.jpg'}, err => {
     t.ok(err instanceof Error, 'should be error')
     t.ok(/base path/.test(err.message), 'msg should contain base path')
     t.end()
@@ -55,7 +55,7 @@ test('throws 400 if trying to access path outside basePath', t => {
 })
 
 test('throws 404 if file does not exist', t => {
-  fsSource({basePath: __dirname}).getImageStream('foo.jpg', err => {
+  fsSource({basePath: __dirname}).getImageStream({urlPath: 'foo.jpg'}, err => {
     t.ok(err instanceof Error, 'should error')
     t.ok(/not found/i.test(err.message), 'msg should contain not found')
     t.end()
@@ -63,7 +63,7 @@ test('throws 404 if file does not exist', t => {
 })
 
 test('throws 404 if path is a directory', t => {
-  fsSource({basePath: path.join(__dirname, '..')}).getImageStream('test', err => {
+  fsSource({basePath: path.join(__dirname, '..')}).getImageStream({urlPath: 'test'}, err => {
     t.ok(err instanceof Error, 'should error')
     t.ok(/not found/i.test(err.message), 'msg should contain not found')
     t.end()
@@ -74,7 +74,7 @@ test('throws 403 on permission denied', t => {
   const streamErr = new Error('Permission denied')
   streamErr.code = 'EACCES'
 
-  fsSource({basePath: __dirname, fs: mockFs(streamErr)}).getImageStream('test', err => {
+  fsSource({basePath: __dirname, fs: mockFs(streamErr)}).getImageStream({urlPath: 'test'}, err => {
     t.ok(err instanceof Error, 'should error')
     t.ok(/permission denied/i.test(err.message), 'msg should contain permission denied')
     t.end()
@@ -85,7 +85,7 @@ test('throws 503 on too many open files', t => {
   const streamErr = new Error('Too many open files')
   streamErr.code = 'EMFILE'
 
-  fsSource({basePath: __dirname, fs: mockFs(streamErr)}).getImageStream('test', err => {
+  fsSource({basePath: __dirname, fs: mockFs(streamErr)}).getImageStream({urlPath: 'test'}, err => {
     t.ok(err instanceof Error, 'should error')
     t.ok(/temporarily unavailable/i.test(err.message), 'msg should contain temporarily unavailable')
     t.end()
@@ -94,7 +94,7 @@ test('throws 503 on too many open files', t => {
 
 test('throws 500 on unknown errors', t => {
   const streamErr = new Error('Not sure')
-  fsSource({basePath: __dirname, fs: mockFs(streamErr)}).getImageStream('test', err => {
+  fsSource({basePath: __dirname, fs: mockFs(streamErr)}).getImageStream({urlPath: 'test'}, err => {
     t.ok(err instanceof Error, 'should error')
     t.equal(err.output.statusCode, 500, 'should be 500 error')
     t.ok(!/Not sure/.test(err.output.message), 'original error should not be exposed to user')
@@ -103,7 +103,7 @@ test('throws 500 on unknown errors', t => {
 })
 
 test('returns stream on valid path', t => {
-  fsSource({basePath: path.resolve(__dirname, '..')}).getImageStream('LICENSE', (err, imgStream) => {
+  fsSource({basePath: path.resolve(__dirname, '..')}).getImageStream({urlPath: 'LICENSE'}, (err, imgStream) => {
     t.ifError(err, 'should not error on stream init')
     readStream(imgStream, (readErr, result) => {
       t.ifError(readErr, 'should not error on stream read')
